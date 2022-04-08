@@ -1,3 +1,9 @@
+### Changes in this fork
+UI changes.
+Toggle checkbox on only checkbox click.
+Event on label click
+Remove console.time logs.
+
 # @widgetjs/tree
 
 [![Version](https://img.shields.io/npm/v/@widgetjs/tree?style=flat)](https://npmjs.com/package/@widgetjs/tree)

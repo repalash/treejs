@@ -135,7 +135,6 @@ export default function Tree(container, options) {
 }
 
 Tree.prototype.init = function(data) {
-  console.time('init');
   let {
     treeNodes,
     nodesById,
@@ -153,18 +152,15 @@ Tree.prototype.init = function(data) {
   if (disables && disables.length) defaultDisables = disables;
   defaultDisables.length && this.setDisables(defaultDisables);
   loaded && loaded.call(this);
-  console.timeEnd('init');
 };
 
 Tree.prototype.load = function(callback) {
-  console.time('load');
   const {url, method, beforeLoad} = this.options;
   ajax({
     url,
     method,
     success: result => {
       let data = result;
-      console.timeEnd('load');
       if (beforeLoad) {
         data = beforeLoad(result);
       }
@@ -209,10 +205,14 @@ Tree.prototype.bindEvent = function(ele) {
       const {target} = e;
       if (
         target.nodeName === 'SPAN' &&
-        (target.classList.contains('treejs-checkbox') ||
-          target.classList.contains('treejs-label'))
+        target.classList.contains('treejs-checkbox')
       ) {
         this.onItemClick(target.parentNode.nodeId);
+      } else if (
+          target.nodeName === 'SPAN' &&
+          target.classList.contains('treejs-label')
+      ) {
+          this.onItemLabelClick(target.parentNode.nodeId);
       } else if (
         target.nodeName === 'LI' &&
         target.classList.contains('treejs-node')
@@ -230,7 +230,6 @@ Tree.prototype.bindEvent = function(ele) {
 };
 
 Tree.prototype.onItemClick = function(id) {
-  console.time('onItemClick');
   const node = this.nodesById[id];
   const {onChange} = this.options;
   if (!node.disabled) {
@@ -238,7 +237,10 @@ Tree.prototype.onItemClick = function(id) {
     this.updateLiElements();
   }
   onChange && onChange.call(this);
-  console.timeEnd('onItemClick');
+};
+Tree.prototype.onItemLabelClick = function(id) {
+    const {onItemLabelClick} = this.options;
+    onItemLabelClick && onItemLabelClick.call(this, id);
 };
 
 Tree.prototype.setValue = function(value) {
