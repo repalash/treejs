@@ -12,7 +12,7 @@ export default class Tree {
     static createLiEle(node: any, closed: any): HTMLLIElement;
     /**
      * @param container {string|HTMLElement}
-     * @param options {{data: any, closeDepth: number, values: string[], disables: string[], loaded: ()=>void, onItemLabelClick: ()=>void, onChange: ()=>void}}
+     * @param options {{data: any, closeDepth: number, values: string[], disables: string[], loaded: ()=>void, onItemLabelClick: (item: any)=>void, onChange: ()=>void}}
      */
     constructor(container: string | HTMLElement, options: {
         data: any;
@@ -20,7 +20,7 @@ export default class Tree {
         values: string[];
         disables: string[];
         loaded: () => void;
-        onItemLabelClick: () => void;
+        onItemLabelClick: (item: any) => void;
         onChange: () => void;
     });
     treeNodes: any[];
@@ -40,7 +40,7 @@ export default class Tree {
         values: string[];
         disables: string[];
         loaded: () => void;
-        onItemLabelClick: () => void;
+        onItemLabelClick: (item: any) => void;
         onChange: () => void;
     };
     init(data: any): void;
