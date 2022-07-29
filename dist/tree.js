@@ -109,11 +109,11 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Tree;
+exports.default = void 0;
 
 var _ajax = _interopRequireDefault(__webpack_require__(1));
 
-__webpack_require__(2);
+var _index = _interopRequireDefault(__webpack_require__(2));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -124,6 +124,12 @@ function _nonIterableRest() { throw new TypeError("Invalid attempt to destructur
 function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
@@ -167,558 +173,584 @@ function collapseFromLeaf(tree, leafNode) {
     return;
   }
 
-  if (leafNode.hasOwnProperty('parent')) collapseFromLeaf(tree, leafNode.parent);
+  if (Object.prototype.hasOwnProperty.call(leafNode, 'parent')) collapseFromLeaf(tree, leafNode.parent);
 }
 
 function expandFromRoot(tree, root) {
   var nodeLiElement = tree.liElementsById[root.id];
   if (nodeLiElement.classList.contains('treejs-node__close')) nodeLiElement.getElementsByClassName('treejs-switcher')[0].click();
-
-  if (root.hasOwnProperty('children')) {
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = root.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var child = _step.value;
-        expandFromRoot(tree, child);
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
-    }
-  }
+  if (Object.prototype.hasOwnProperty.call(root, 'children')) root.children.forEach(function (child) {
+    return expandFromRoot(tree, child);
+  });
 }
 
-function Tree(container, options) {
-  var _this = this;
+var Tree =
+/*#__PURE__*/
+function () {
+  function Tree(container, options) {
+    var _this = this;
 
-  var defaultOptions = {
-    selectMode: 'checkbox',
-    values: [],
-    disables: [],
-    beforeLoad: null,
-    loaded: null,
-    url: null,
-    method: 'GET',
-    closeDepth: null
-  };
-  this.treeNodes = [];
-  this.nodesById = {};
-  this.leafNodesById = {};
-  this.liElementsById = {};
-  this.willUpdateNodesById = {};
-  this.container = container;
-  this.options = Object.assign(defaultOptions, options);
-  Object.defineProperties(this, {
-    values: {
-      get: function get() {
-        return this.getValues();
-      },
-      set: function set(values) {
-        return this.setValues(uniq(values));
-      }
-    },
-    disables: {
-      get: function get() {
-        return this.getDisables();
-      },
-      set: function set(values) {
-        return this.setDisables(uniq(values));
-      }
-    },
-    selectedNodes: {
-      get: function get() {
-        var nodes = [];
-        var nodesById = this.nodesById;
+    _classCallCheck(this, Tree);
 
-        for (var id in nodesById) {
-          if (nodesById.hasOwnProperty(id) && (nodesById[id].status === 1 || nodesById[id].status === 2)) {
-            var node = Object.assign({}, nodesById[id]);
-            delete node.parent;
-            delete node.children;
-            nodes.push(node);
-          }
+    _index.default.use({
+      target: container
+    });
+
+    var defaultOptions = {
+      selectMode: 'checkbox',
+      values: [],
+      disables: [],
+      beforeLoad: null,
+      loaded: null,
+      url: null,
+      method: 'GET',
+      closeDepth: null
+    };
+    this.treeNodes = [];
+    this.nodesById = {};
+    this.leafNodesById = {};
+    this.liElementsById = {};
+    this.willUpdateNodesById = {};
+    this.container = container;
+    this.options = Object.assign(defaultOptions, options);
+    Object.defineProperties(this, {
+      values: {
+        get: function get() {
+          return this.getValues();
+        },
+        set: function set(values) {
+          return this.setValues(uniq(values));
         }
-
-        return nodes;
-      }
-    },
-    disabledNodes: {
-      get: function get() {
-        var nodes = [];
-        var nodesById = this.nodesById;
-
-        for (var id in nodesById) {
-          if (nodesById.hasOwnProperty(id) && nodesById[id].disabled) {
-            var node = Object.assign({}, nodesById[id]);
-            delete node.parent;
-            nodes.push(node);
-          }
+      },
+      disables: {
+        get: function get() {
+          return this.getDisables();
+        },
+        set: function set(values) {
+          return this.setDisables(uniq(values));
         }
-
-        return nodes;
-      }
-    }
-  });
-
-  if (this.options.url) {
-    this.load(function (data) {
-      _this.init(data);
-    });
-  } else {
-    this.init(this.options.data);
-  }
-}
-
-Tree.prototype.init = function (data) {
-  var _Tree$parseTreeData = Tree.parseTreeData(data),
-      treeNodes = _Tree$parseTreeData.treeNodes,
-      nodesById = _Tree$parseTreeData.nodesById,
-      leafNodesById = _Tree$parseTreeData.leafNodesById,
-      defaultValues = _Tree$parseTreeData.defaultValues,
-      defaultDisables = _Tree$parseTreeData.defaultDisables;
-
-  this.treeNodes = treeNodes;
-  this.nodesById = nodesById;
-  this.leafNodesById = leafNodesById;
-  this.render(this.treeNodes);
-  var _this$options = this.options,
-      values = _this$options.values,
-      disables = _this$options.disables,
-      loaded = _this$options.loaded;
-  if (values && values.length) defaultValues = values;
-  defaultValues.length && this.setValues(defaultValues);
-  if (disables && disables.length) defaultDisables = disables;
-  defaultDisables.length && this.setDisables(defaultDisables);
-  loaded && loaded.call(this);
-};
-
-Tree.prototype.load = function (callback) {
-  var _this$options2 = this.options,
-      url = _this$options2.url,
-      method = _this$options2.method,
-      beforeLoad = _this$options2.beforeLoad;
-  (0, _ajax.default)({
-    url: url,
-    method: method,
-    success: function success(result) {
-      var data = result;
-
-      if (beforeLoad) {
-        data = beforeLoad(result);
-      }
-
-      callback(data);
-    }
-  });
-};
-
-Tree.prototype.render = function (treeNodes) {
-  var treeEle = Tree.createRootEle();
-  treeEle.appendChild(this.buildTree(treeNodes, 0));
-  this.bindEvent(treeEle);
-  var ele = document.querySelector(this.container);
-  empty(ele);
-  ele.appendChild(treeEle);
-};
-
-Tree.prototype.buildTree = function (nodes, depth) {
-  var _this2 = this;
-
-  var rootUlEle = Tree.createUlEle();
-
-  if (nodes && nodes.length) {
-    nodes.forEach(function (node) {
-      var liEle = Tree.createLiEle(node, depth === _this2.options.closeDepth - 1);
-      _this2.liElementsById[node.id] = liEle;
-      var ulEle = null;
-
-      if (node.children && node.children.length) {
-        ulEle = _this2.buildTree(node.children, depth + 1);
-      }
-
-      ulEle && liEle.appendChild(ulEle);
-      rootUlEle.appendChild(liEle);
-    });
-  }
-
-  return rootUlEle;
-};
-
-Tree.prototype.bindEvent = function (ele) {
-  var _this3 = this;
-
-  ele.addEventListener('click', function (e) {
-    var target = e.target;
-
-    if (target.nodeName === 'SPAN' && target.classList.contains('treejs-checkbox')) {
-      _this3.onItemClick(target.parentNode.nodeId);
-    } else if (target.nodeName === 'SPAN' && target.classList.contains('treejs-label')) {
-      _this3.onItemLabelClick(target.parentNode.nodeId);
-    } else if (target.nodeName === 'LI' && target.classList.contains('treejs-node')) {
-      _this3.onItemClick(target.nodeId);
-    } else if (target.nodeName === 'SPAN' && target.classList.contains('treejs-switcher')) {
-      _this3.onSwitcherClick(target);
-    }
-  }, false);
-};
-
-Tree.prototype.onItemClick = function (id) {
-  var node = this.nodesById[id];
-  var onChange = this.options.onChange;
-
-  if (!node.disabled) {
-    this.setValue(id);
-    this.updateLiElements();
-  }
-
-  onChange && onChange.call(this);
-};
-
-Tree.prototype.onItemLabelClick = function (id) {
-  var onItemLabelClick = this.options.onItemLabelClick;
-  onItemLabelClick && onItemLabelClick.call(this, id);
-};
-
-Tree.prototype.setValue = function (value) {
-  var node = this.nodesById[value];
-  if (!node) return;
-  var prevStatus = node.status;
-  var status = prevStatus === 1 || prevStatus === 2 ? 0 : 2;
-  node.status = status;
-  this.markWillUpdateNode(node);
-  this.walkUp(node, 'status');
-  this.walkDown(node, 'status');
-};
-
-Tree.prototype.getValues = function () {
-  var values = [];
-
-  for (var id in this.leafNodesById) {
-    if (this.leafNodesById.hasOwnProperty(id)) {
-      if (this.leafNodesById[id].status === 1 || this.leafNodesById[id].status === 2) {
-        values.push(id);
-      }
-    }
-  }
-
-  return values;
-};
-
-Tree.prototype.setValues = function (values) {
-  var _this4 = this;
-
-  this.emptyNodesCheckStatus();
-  values.forEach(function (value) {
-    _this4.setValue(value);
-  });
-  this.updateLiElements();
-  var onChange = this.options.onChange;
-  onChange && onChange.call(this);
-};
-
-Tree.prototype.setDisable = function (value) {
-  var node = this.nodesById[value];
-  if (!node) return;
-  var prevDisabled = node.disabled;
-
-  if (!prevDisabled) {
-    node.disabled = true;
-    this.markWillUpdateNode(node);
-    this.walkUp(node, 'disabled');
-    this.walkDown(node, 'disabled');
-  }
-};
-
-Tree.prototype.getDisables = function () {
-  var values = [];
-
-  for (var id in this.leafNodesById) {
-    if (this.leafNodesById.hasOwnProperty(id)) {
-      if (this.leafNodesById[id].disabled) {
-        values.push(id);
-      }
-    }
-  }
-
-  return values;
-};
-
-Tree.prototype.setDisables = function (values) {
-  var _this5 = this;
-
-  this.emptyNodesDisable();
-  values.forEach(function (value) {
-    _this5.setDisable(value);
-  });
-  this.updateLiElements();
-};
-
-Tree.prototype.emptyNodesCheckStatus = function () {
-  this.willUpdateNodesById = this.getSelectedNodesById();
-  Object.values(this.willUpdateNodesById).forEach(function (node) {
-    if (!node.disabled) node.status = 0;
-  });
-};
-
-Tree.prototype.emptyNodesDisable = function () {
-  this.willUpdateNodesById = this.getDisabledNodesById();
-  Object.values(this.willUpdateNodesById).forEach(function (node) {
-    node.disabled = false;
-  });
-};
-
-Tree.prototype.getSelectedNodesById = function () {
-  return Object.entries(this.nodesById).reduce(function (acc, _ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-        id = _ref2[0],
-        node = _ref2[1];
-
-    if (node.status === 1 || node.status === 2) {
-      acc[id] = node;
-    }
-
-    return acc;
-  }, {});
-};
-
-Tree.prototype.getDisabledNodesById = function () {
-  return Object.entries(this.nodesById).reduce(function (acc, _ref3) {
-    var _ref4 = _slicedToArray(_ref3, 2),
-        id = _ref4[0],
-        node = _ref4[1];
-
-    if (node.disabled) {
-      acc[id] = node;
-    }
-
-    return acc;
-  }, {});
-};
-
-Tree.prototype.updateLiElements = function () {
-  var _this6 = this;
-
-  Object.values(this.willUpdateNodesById).forEach(function (node) {
-    _this6.updateLiElement(node);
-  });
-  this.willUpdateNodesById = {};
-};
-
-Tree.prototype.markWillUpdateNode = function (node) {
-  this.willUpdateNodesById[node.id] = node;
-};
-
-Tree.prototype.onSwitcherClick = function (target) {
-  var liEle = target.parentNode;
-  var ele = liEle.lastChild;
-  var height = ele.scrollHeight;
-
-  if (liEle.classList.contains('treejs-node__close')) {
-    animation(150, {
-      enter: function enter() {
-        ele.style.height = 0;
-        ele.style.opacity = 0;
       },
-      active: function active() {
-        ele.style.height = "".concat(height, "px");
-        ele.style.opacity = 1;
+      selectedNodes: {
+        get: function get() {
+          var nodes = [];
+          var nodesById = this.nodesById;
+          Object.keys(nodesById).forEach(function (id) {
+            if (Object.prototype.hasOwnProperty.call(nodesById, id) && (nodesById[id].status === 1 || nodesById[id].status === 2)) {
+              var node = Object.assign({}, nodesById[id]);
+              delete node.parent;
+              delete node.children;
+              nodes.push(node);
+            }
+          });
+          return nodes;
+        }
       },
-      leave: function leave() {
-        ele.style.height = '';
-        ele.style.opacity = '';
-        liEle.classList.remove('treejs-node__close');
+      disabledNodes: {
+        get: function get() {
+          var nodes = [];
+          var nodesById = this.nodesById;
+          Object.keys(nodesById).forEach(function (id) {
+            if (Object.prototype.hasOwnProperty.call(nodesById, id) && nodesById[id].disabled) {
+              var node = Object.assign({}, nodesById[id]);
+              delete node.parent;
+              nodes.push(node);
+            }
+          });
+          return nodes;
+        }
       }
     });
-  } else {
-    animation(150, {
-      enter: function enter() {
-        ele.style.height = "".concat(height, "px");
-        ele.style.opacity = 1;
-      },
-      active: function active() {
-        ele.style.height = 0;
-        ele.style.opacity = 0;
-      },
-      leave: function leave() {
-        ele.style.height = '';
-        ele.style.opacity = '';
-        liEle.classList.add('treejs-node__close');
-      }
-    });
-  }
-};
 
-Tree.prototype.walkUp = function (node, changeState) {
-  var parent = node.parent;
-
-  if (parent) {
-    if (changeState === 'status') {
-      var pStatus = null;
-      var statusCount = parent.children.reduce(function (acc, child) {
-        if (!isNaN(child.status)) return acc + child.status;
-        return acc;
-      }, 0);
-
-      if (statusCount) {
-        pStatus = statusCount === parent.children.length * 2 ? 2 : 1;
-      } else {
-        pStatus = 0;
-      }
-
-      if (parent.status === pStatus) return;
-      parent.status = pStatus;
+    if (this.options.url) {
+      this.load(function (data) {
+        _this.init(data);
+      });
     } else {
-      var pDisabled = parent.children.reduce(function (acc, child) {
-        return acc && child.disabled;
-      }, true);
-      if (parent.disabled === pDisabled) return;
-      parent.disabled = pDisabled;
+      this.init(this.options.data);
     }
-
-    this.markWillUpdateNode(parent);
-    this.walkUp(parent, changeState);
-  }
-};
-
-Tree.prototype.walkDown = function (node, changeState) {
-  var _this7 = this;
-
-  if (node.children && node.children.length) {
-    node.children.forEach(function (child) {
-      if (changeState === 'status' && child.disabled) return;
-      child[changeState] = node[changeState];
-
-      _this7.markWillUpdateNode(child);
-
-      _this7.walkDown(child, changeState);
-    });
-  }
-};
-
-Tree.prototype.updateLiElement = function (node) {
-  var classList = this.liElementsById[node.id].classList;
-
-  switch (node.status) {
-    case 0:
-      classList.remove('treejs-node__halfchecked', 'treejs-node__checked');
-      break;
-
-    case 1:
-      classList.remove('treejs-node__checked');
-      classList.add('treejs-node__halfchecked');
-      break;
-
-    case 2:
-      classList.remove('treejs-node__halfchecked');
-      classList.add('treejs-node__checked');
-      break;
   }
 
-  switch (node.disabled) {
-    case true:
-      if (!classList.contains('treejs-node__disabled')) classList.add('treejs-node__disabled');
-      break;
+  _createClass(Tree, [{
+    key: "init",
+    value: function init(data) {
+      var _Tree$parseTreeData = Tree.parseTreeData(data),
+          treeNodes = _Tree$parseTreeData.treeNodes,
+          nodesById = _Tree$parseTreeData.nodesById,
+          leafNodesById = _Tree$parseTreeData.leafNodesById,
+          defaultValues = _Tree$parseTreeData.defaultValues,
+          defaultDisables = _Tree$parseTreeData.defaultDisables;
 
-    case false:
-      if (classList.contains('treejs-node__disabled')) classList.remove('treejs-node__disabled');
-      break;
-  }
-};
+      this.treeNodes = treeNodes;
+      this.nodesById = nodesById;
+      this.leafNodesById = leafNodesById;
+      this.render(this.treeNodes);
+      var _this$options = this.options,
+          values = _this$options.values,
+          disables = _this$options.disables,
+          loaded = _this$options.loaded;
+      if (values && values.length) this.setValues(values);else if (defaultValues && defaultValues.length) this.setValues(defaultValues);
+      if (disables && disables.length) this.setDisables(disables);else if (defaultDisables && defaultDisables.length) this.setDisables(defaultDisables);
+      if (typeof loaded === 'function') loaded.call(this);
+    }
+  }, {
+    key: "load",
+    value: function load(callback) {
+      var _this$options2 = this.options,
+          url = _this$options2.url,
+          method = _this$options2.method,
+          beforeLoad = _this$options2.beforeLoad;
+      (0, _ajax.default)({
+        url: url,
+        method: method,
+        success: function success(result) {
+          var data = result;
 
-Tree.prototype.collapseAll = function () {
-  var leafNodesById = this.leafNodesById;
+          if (beforeLoad) {
+            data = beforeLoad(result);
+          }
 
-  for (var id in leafNodesById) {
-    var leafNode = leafNodesById[id];
-    collapseFromLeaf(this, leafNode);
-  }
-};
+          callback(data);
+        }
+      });
+    }
+  }, {
+    key: "render",
+    value: function render(treeNodes) {
+      var treeEle = Tree.createRootEle();
+      treeEle.appendChild(this.buildTree(treeNodes, 0));
+      this.bindEvent(treeEle);
+      var ele = document.querySelector(this.container);
+      empty(ele);
+      ele.appendChild(treeEle);
+    }
+  }, {
+    key: "buildTree",
+    value: function buildTree(nodes, depth) {
+      var _this2 = this;
 
-Tree.prototype.expandAll = function () {
-  expandFromRoot(this, this.treeNodes[0]);
-};
+      var rootUlEle = Tree.createUlEle();
 
-Tree.parseTreeData = function (data) {
-  var treeNodes = deepClone(data);
-  var nodesById = {};
-  var leafNodesById = {};
-  var values = [];
-  var disables = [];
+      if (nodes && nodes.length) {
+        nodes.forEach(function (node) {
+          var liEle = Tree.createLiEle(node, depth === _this2.options.closeDepth - 1);
+          _this2.liElementsById[node.id] = liEle;
+          var ulEle = null;
 
-  var walkTree = function walkTree(nodes, parent) {
-    nodes.forEach(function (node) {
-      nodesById[node.id] = node;
-      if (node.checked) values.push(node.id);
-      if (node.disabled) disables.push(node.id);
-      if (parent) node.parent = parent;
+          if (node.children && node.children.length) {
+            ulEle = _this2.buildTree(node.children, depth + 1);
+          }
+
+          if (ulEle) liEle.appendChild(ulEle);
+          rootUlEle.appendChild(liEle);
+        });
+      }
+
+      return rootUlEle;
+    }
+  }, {
+    key: "bindEvent",
+    value: function bindEvent(ele) {
+      var _this3 = this;
+
+      ele.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (target.nodeName === 'SPAN' && target.classList.contains('treejs-checkbox')) {
+          _this3.onItemClick(target.parentNode.nodeId);
+        } else if (target.nodeName === 'SPAN' && target.classList.contains('treejs-label')) {
+          _this3.onItemLabelClick(target.parentNode.nodeId);
+        } else if (target.nodeName === 'LI' && target.classList.contains('treejs-node')) {
+          _this3.onItemClick(target.nodeId);
+        } else if (target.nodeName === 'SPAN' && target.classList.contains('treejs-switcher')) {
+          Tree.onSwitcherClick(target);
+        }
+      }, false);
+    }
+  }, {
+    key: "onItemClick",
+    value: function onItemClick(id) {
+      var node = this.nodesById[id];
+      var onChange = this.options.onChange;
+
+      if (!node.disabled) {
+        this.setValue(id);
+        this.updateLiElements();
+      }
+
+      if (onChange) onChange.call(this);
+    }
+  }, {
+    key: "onItemLabelClick",
+    value: function onItemLabelClick(id) {
+      var onItemLabelClick = this.options.onItemLabelClick;
+      if (onItemLabelClick) onItemLabelClick.call(this, id);
+    }
+  }, {
+    key: "setValue",
+    value: function setValue(value) {
+      var node = this.nodesById[value];
+      if (!node) return;
+      var prevStatus = node.status;
+      var status = prevStatus === 1 || prevStatus === 2 ? 0 : 2;
+      node.status = status;
+      this.markWillUpdateNode(node);
+      this.walkUp(node, 'status');
+      this.walkDown(node, 'status');
+    }
+  }, {
+    key: "getValues",
+    value: function getValues() {
+      var _this4 = this;
+
+      var values = [];
+      Object.keys(this.leafNodesById).forEach(function (id) {
+        if (Object.prototype.hasOwnProperty.call(_this4.leafNodesById, id)) {
+          if (_this4.leafNodesById[id].status === 1 || _this4.leafNodesById[id].status === 2) {
+            values.push(id);
+          }
+        }
+      });
+      return values;
+    }
+  }, {
+    key: "setValues",
+    value: function setValues(values) {
+      var _this5 = this;
+
+      this.emptyNodesCheckStatus();
+      values.forEach(function (value) {
+        _this5.setValue(value);
+      });
+      this.updateLiElements();
+      var onChange = this.options.onChange;
+      if (onChange) onChange.call(this);
+    }
+  }, {
+    key: "setDisable",
+    value: function setDisable(value) {
+      var node = this.nodesById[value];
+      if (!node) return;
+      var prevDisabled = node.disabled;
+
+      if (!prevDisabled) {
+        node.disabled = true;
+        this.markWillUpdateNode(node);
+        this.walkUp(node, 'disabled');
+        this.walkDown(node, 'disabled');
+      }
+    }
+  }, {
+    key: "getDisables",
+    value: function getDisables() {
+      var _this6 = this;
+
+      var values = [];
+      Object.keys(this.leafNodesById).forEach(function (id) {
+        if (Object.prototype.hasOwnProperty.call(_this6.leafNodesById, id)) {
+          if (_this6.leafNodesById[id].disabled) {
+            values.push(id);
+          }
+        }
+      });
+      return values;
+    }
+  }, {
+    key: "setDisables",
+    value: function setDisables(values) {
+      var _this7 = this;
+
+      this.emptyNodesDisable();
+      values.forEach(function (value) {
+        _this7.setDisable(value);
+      });
+      this.updateLiElements();
+    }
+  }, {
+    key: "emptyNodesCheckStatus",
+    value: function emptyNodesCheckStatus() {
+      this.willUpdateNodesById = this.getSelectedNodesById();
+      Object.values(this.willUpdateNodesById).forEach(function (node) {
+        // eslint-disable-next-line no-param-reassign
+        if (!node.disabled) node.status = 0;
+      });
+    }
+  }, {
+    key: "emptyNodesDisable",
+    value: function emptyNodesDisable() {
+      this.willUpdateNodesById = this.getDisabledNodesById();
+      Object.values(this.willUpdateNodesById).forEach(function (node) {
+        // eslint-disable-next-line no-param-reassign
+        node.disabled = false;
+      });
+    }
+  }, {
+    key: "getSelectedNodesById",
+    value: function getSelectedNodesById() {
+      return Object.entries(this.nodesById).reduce(function (acc, _ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+            id = _ref2[0],
+            node = _ref2[1];
+
+        if (node.status === 1 || node.status === 2) {
+          acc[id] = node;
+        }
+
+        return acc;
+      }, {});
+    }
+  }, {
+    key: "getDisabledNodesById",
+    value: function getDisabledNodesById() {
+      return Object.entries(this.nodesById).reduce(function (acc, _ref3) {
+        var _ref4 = _slicedToArray(_ref3, 2),
+            id = _ref4[0],
+            node = _ref4[1];
+
+        if (node.disabled) {
+          acc[id] = node;
+        }
+
+        return acc;
+      }, {});
+    }
+  }, {
+    key: "updateLiElements",
+    value: function updateLiElements() {
+      var _this8 = this;
+
+      Object.values(this.willUpdateNodesById).forEach(function (node) {
+        _this8.updateLiElement(node);
+      });
+      this.willUpdateNodesById = {};
+    }
+  }, {
+    key: "markWillUpdateNode",
+    value: function markWillUpdateNode(node) {
+      this.willUpdateNodesById[node.id] = node;
+    }
+  }, {
+    key: "walkUp",
+    value: function walkUp(node, changeState) {
+      var parent = node.parent;
+
+      if (parent) {
+        if (changeState === 'status') {
+          var pStatus = null;
+          var statusCount = parent.children.reduce(function (acc, child) {
+            if (!Number.isNaN(child.status)) return acc + child.status;
+            return acc;
+          }, 0);
+
+          if (statusCount) {
+            pStatus = statusCount === parent.children.length * 2 ? 2 : 1;
+          } else {
+            pStatus = 0;
+          }
+
+          if (parent.status === pStatus) return;
+          parent.status = pStatus;
+        } else {
+          var pDisabled = parent.children.reduce(function (acc, child) {
+            return acc && child.disabled;
+          }, true);
+          if (parent.disabled === pDisabled) return;
+          parent.disabled = pDisabled;
+        }
+
+        this.markWillUpdateNode(parent);
+        this.walkUp(parent, changeState);
+      }
+    }
+  }, {
+    key: "walkDown",
+    value: function walkDown(node, changeState) {
+      var _this9 = this;
 
       if (node.children && node.children.length) {
-        walkTree(node.children, node);
-      } else {
-        leafNodesById[node.id] = node;
+        node.children.forEach(function (child) {
+          if (changeState === 'status' && child.disabled) return; // eslint-disable-next-line no-param-reassign
+
+          child[changeState] = node[changeState];
+
+          _this9.markWillUpdateNode(child);
+
+          _this9.walkDown(child, changeState);
+        });
       }
-    });
-  };
+    }
+  }, {
+    key: "updateLiElement",
+    value: function updateLiElement(node) {
+      var classList = this.liElementsById[node.id].classList;
 
-  walkTree(treeNodes);
-  return {
-    treeNodes: treeNodes,
-    nodesById: nodesById,
-    leafNodesById: leafNodesById,
-    defaultValues: values,
-    defaultDisables: disables
-  };
-};
+      switch (node.status) {
+        case 0:
+          classList.remove('treejs-node__halfchecked', 'treejs-node__checked');
+          break;
 
-Tree.createRootEle = function () {
-  var div = document.createElement('div');
-  div.classList.add('treejs');
-  return div;
-};
+        case 1:
+          classList.remove('treejs-node__checked');
+          classList.add('treejs-node__halfchecked');
+          break;
 
-Tree.createUlEle = function () {
-  var ul = document.createElement('ul');
-  ul.classList.add('treejs-nodes');
-  return ul;
-};
+        case 2:
+          classList.remove('treejs-node__halfchecked');
+          classList.add('treejs-node__checked');
+          break;
 
-Tree.createLiEle = function (node, closed) {
-  var li = document.createElement('li');
-  li.classList.add('treejs-node');
-  if (closed) li.classList.add('treejs-node__close');
+        default:
+          break;
+      }
 
-  if (node.children && node.children.length) {
-    var switcher = document.createElement('span');
-    switcher.classList.add('treejs-switcher');
-    li.appendChild(switcher);
-  } else {
-    li.classList.add('treejs-placeholder');
-  }
+      switch (node.disabled) {
+        case true:
+          if (!classList.contains('treejs-node__disabled')) classList.add('treejs-node__disabled');
+          break;
 
-  var checkbox = document.createElement('span');
-  checkbox.classList.add('treejs-checkbox');
-  li.appendChild(checkbox);
-  var label = document.createElement('span');
-  label.classList.add('treejs-label');
-  var text = document.createTextNode(node.text);
-  label.appendChild(text);
-  li.appendChild(label);
-  li.nodeId = node.id;
-  return li;
-};
+        case false:
+          if (classList.contains('treejs-node__disabled')) classList.remove('treejs-node__disabled');
+          break;
+
+        default:
+          break;
+      }
+    }
+  }, {
+    key: "collapseAll",
+    value: function collapseAll() {
+      var _this10 = this;
+
+      Object.keys(this.leafNodesById).forEach(function (id) {
+        var leafNode = _this10.leafNodesById[id];
+        collapseFromLeaf(_this10, leafNode);
+      });
+    }
+  }, {
+    key: "expandAll",
+    value: function expandAll() {
+      expandFromRoot(this, this.treeNodes[0]);
+    }
+  }], [{
+    key: "onSwitcherClick",
+    value: function onSwitcherClick(target) {
+      var liEle = target.parentNode;
+      var ele = liEle.lastChild;
+      var height = ele.scrollHeight;
+
+      if (liEle.classList.contains('treejs-node__close')) {
+        animation(150, {
+          enter: function enter() {
+            ele.style.height = 0;
+            ele.style.opacity = 0;
+          },
+          active: function active() {
+            ele.style.height = "".concat(height, "px");
+            ele.style.opacity = 1;
+          },
+          leave: function leave() {
+            ele.style.height = '';
+            ele.style.opacity = '';
+            liEle.classList.remove('treejs-node__close');
+          }
+        });
+      } else {
+        animation(150, {
+          enter: function enter() {
+            ele.style.height = "".concat(height, "px");
+            ele.style.opacity = 1;
+          },
+          active: function active() {
+            ele.style.height = 0;
+            ele.style.opacity = 0;
+          },
+          leave: function leave() {
+            ele.style.height = '';
+            ele.style.opacity = '';
+            liEle.classList.add('treejs-node__close');
+          }
+        });
+      }
+    }
+  }, {
+    key: "parseTreeData",
+    value: function parseTreeData(data) {
+      var treeNodes = deepClone(data);
+      var nodesById = {};
+      var leafNodesById = {};
+      var values = [];
+      var disables = [];
+
+      var walkTree = function walkTree(nodes, parent) {
+        nodes.forEach(function (node) {
+          nodesById[node.id] = node;
+          if (node.checked) values.push(node.id);
+          if (node.disabled) disables.push(node.id); // eslint-disable-next-line no-param-reassign
+
+          if (parent) node.parent = parent;
+
+          if (node.children && node.children.length) {
+            walkTree(node.children, node);
+          } else {
+            leafNodesById[node.id] = node;
+          }
+        });
+      };
+
+      walkTree(treeNodes);
+      return {
+        treeNodes: treeNodes,
+        nodesById: nodesById,
+        leafNodesById: leafNodesById,
+        defaultValues: values,
+        defaultDisables: disables
+      };
+    }
+  }, {
+    key: "createRootEle",
+    value: function createRootEle() {
+      var div = document.createElement('div');
+      div.classList.add('treejs');
+      return div;
+    }
+  }, {
+    key: "createUlEle",
+    value: function createUlEle() {
+      var ul = document.createElement('ul');
+      ul.classList.add('treejs-nodes');
+      return ul;
+    }
+  }, {
+    key: "createLiEle",
+    value: function createLiEle(node, closed) {
+      var li = document.createElement('li');
+      li.classList.add('treejs-node');
+      if (closed) li.classList.add('treejs-node__close');
+
+      if (node.children && node.children.length) {
+        var switcher = document.createElement('span');
+        switcher.classList.add('treejs-switcher');
+        li.appendChild(switcher);
+      } else {
+        li.classList.add('treejs-placeholder');
+      }
+
+      var checkbox = document.createElement('span');
+      checkbox.classList.add('treejs-checkbox');
+      li.appendChild(checkbox);
+      var label = document.createElement('span');
+      label.classList.add('treejs-label');
+      var text = document.createTextNode(node.text);
+      label.appendChild(text);
+      li.appendChild(label);
+      li.nodeId = node.id;
+      return li;
+    }
+  }]);
+
+  return Tree;
+}();
+
+exports.default = Tree;
 
 /***/ }),
 /* 1 */
@@ -798,34 +830,329 @@ function _default(_options) {
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_index_js_node_modules_postcss_loader_lib_index_js_ref_5_2_node_modules_less_loader_dist_cjs_js_index_less__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_css_loader_index_js_node_modules_postcss_loader_lib_index_js_ref_5_2_node_modules_less_loader_dist_cjs_js_index_less__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_index_js_node_modules_postcss_loader_lib_index_js_ref_5_2_node_modules_less_loader_dist_cjs_js_index_less__WEBPACK_IMPORTED_MODULE_1__);
+
+            
+
+var refs = 0;
+var update;
+var options = {"injectType":"lazyStyleTag"};
+
+options.insert = function insertIntoTarget(element, options) {
+                                ;(options.target || document.head).appendChild(element);
+                            };
+options.singleton = false;
+
+var exported = {};
+
+exported.locals = _node_modules_css_loader_index_js_node_modules_postcss_loader_lib_index_js_ref_5_2_node_modules_less_loader_dist_cjs_js_index_less__WEBPACK_IMPORTED_MODULE_1___default.a.locals || {};
+exported.use = function() {
+  if (!(refs++)) {
+    update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_index_js_node_modules_postcss_loader_lib_index_js_ref_5_2_node_modules_less_loader_dist_cjs_js_index_less__WEBPACK_IMPORTED_MODULE_1___default.a, options);
+  }
+
+  return exported;
+};
+exported.unuse = function() {
+  if (refs > 0 && !--refs) {
+    update();
+    update = null;
+  }
+};
 
 
-var content = __webpack_require__(3);
 
-if(typeof content === 'string') content = [[module.i, content, '']];
+;
+       /* harmony default export */ __webpack_exports__["default"] = (exported);
 
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(5)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)(false);
+"use strict";
+
+
+var isOldIE = function isOldIE() {
+  var memo;
+  return function memorize() {
+    if (typeof memo === 'undefined') {
+      // Test for IE <= 9 as proposed by Browserhacks
+      // @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+      // Tests for existence of standard globals is to allow style-loader
+      // to operate correctly into non-standard environments
+      // @see https://github.com/webpack-contrib/style-loader/issues/177
+      memo = Boolean(window && document && document.all && !window.atob);
+    }
+
+    return memo;
+  };
+}();
+
+var getTarget = function getTarget() {
+  var memo = {};
+  return function memorize(target) {
+    if (typeof memo[target] === 'undefined') {
+      var styleTarget = document.querySelector(target); // Special case to return head of iframe instead of iframe itself
+
+      if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+        try {
+          // This will throw an exception if access to iframe is blocked
+          // due to cross-origin restrictions
+          styleTarget = styleTarget.contentDocument.head;
+        } catch (e) {
+          // istanbul ignore next
+          styleTarget = null;
+        }
+      }
+
+      memo[target] = styleTarget;
+    }
+
+    return memo[target];
+  };
+}();
+
+var stylesInDom = [];
+
+function getIndexByIdentifier(identifier) {
+  var result = -1;
+
+  for (var i = 0; i < stylesInDom.length; i++) {
+    if (stylesInDom[i].identifier === identifier) {
+      result = i;
+      break;
+    }
+  }
+
+  return result;
+}
+
+function modulesToDom(list, options) {
+  var idCountMap = {};
+  var identifiers = [];
+
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i];
+    var id = options.base ? item[0] + options.base : item[0];
+    var count = idCountMap[id] || 0;
+    var identifier = "".concat(id, " ").concat(count);
+    idCountMap[id] = count + 1;
+    var index = getIndexByIdentifier(identifier);
+    var obj = {
+      css: item[1],
+      media: item[2],
+      sourceMap: item[3]
+    };
+
+    if (index !== -1) {
+      stylesInDom[index].references++;
+      stylesInDom[index].updater(obj);
+    } else {
+      stylesInDom.push({
+        identifier: identifier,
+        updater: addStyle(obj, options),
+        references: 1
+      });
+    }
+
+    identifiers.push(identifier);
+  }
+
+  return identifiers;
+}
+
+function insertStyleElement(options) {
+  var style = document.createElement('style');
+  var attributes = options.attributes || {};
+
+  if (typeof attributes.nonce === 'undefined') {
+    var nonce =  true ? __webpack_require__.nc : undefined;
+
+    if (nonce) {
+      attributes.nonce = nonce;
+    }
+  }
+
+  Object.keys(attributes).forEach(function (key) {
+    style.setAttribute(key, attributes[key]);
+  });
+
+  if (typeof options.insert === 'function') {
+    options.insert(style);
+  } else {
+    var target = getTarget(options.insert || 'head');
+
+    if (!target) {
+      throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
+    }
+
+    target.appendChild(style);
+  }
+
+  return style;
+}
+
+function removeStyleElement(style) {
+  // istanbul ignore if
+  if (style.parentNode === null) {
+    return false;
+  }
+
+  style.parentNode.removeChild(style);
+}
+/* istanbul ignore next  */
+
+
+var replaceText = function replaceText() {
+  var textStore = [];
+  return function replace(index, replacement) {
+    textStore[index] = replacement;
+    return textStore.filter(Boolean).join('\n');
+  };
+}();
+
+function applyToSingletonTag(style, index, remove, obj) {
+  var css = remove ? '' : obj.media ? "@media ".concat(obj.media, " {").concat(obj.css, "}") : obj.css; // For old IE
+
+  /* istanbul ignore if  */
+
+  if (style.styleSheet) {
+    style.styleSheet.cssText = replaceText(index, css);
+  } else {
+    var cssNode = document.createTextNode(css);
+    var childNodes = style.childNodes;
+
+    if (childNodes[index]) {
+      style.removeChild(childNodes[index]);
+    }
+
+    if (childNodes.length) {
+      style.insertBefore(cssNode, childNodes[index]);
+    } else {
+      style.appendChild(cssNode);
+    }
+  }
+}
+
+function applyToTag(style, options, obj) {
+  var css = obj.css;
+  var media = obj.media;
+  var sourceMap = obj.sourceMap;
+
+  if (media) {
+    style.setAttribute('media', media);
+  } else {
+    style.removeAttribute('media');
+  }
+
+  if (sourceMap && typeof btoa !== 'undefined') {
+    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
+  } // For old IE
+
+  /* istanbul ignore if  */
+
+
+  if (style.styleSheet) {
+    style.styleSheet.cssText = css;
+  } else {
+    while (style.firstChild) {
+      style.removeChild(style.firstChild);
+    }
+
+    style.appendChild(document.createTextNode(css));
+  }
+}
+
+var singleton = null;
+var singletonCounter = 0;
+
+function addStyle(obj, options) {
+  var style;
+  var update;
+  var remove;
+
+  if (options.singleton) {
+    var styleIndex = singletonCounter++;
+    style = singleton || (singleton = insertStyleElement(options));
+    update = applyToSingletonTag.bind(null, style, styleIndex, false);
+    remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+  } else {
+    style = insertStyleElement(options);
+    update = applyToTag.bind(null, style, options);
+
+    remove = function remove() {
+      removeStyleElement(style);
+    };
+  }
+
+  update(obj);
+  return function updateStyle(newObj) {
+    if (newObj) {
+      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap) {
+        return;
+      }
+
+      update(obj = newObj);
+    } else {
+      remove();
+    }
+  };
+}
+
+module.exports = function (list, options) {
+  options = options || {}; // Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+  // tags it will allow on a page
+
+  if (!options.singleton && typeof options.singleton !== 'boolean') {
+    options.singleton = isOldIE();
+  }
+
+  list = list || [];
+  var lastIdentifiers = modulesToDom(list, options);
+  return function update(newList) {
+    newList = newList || [];
+
+    if (Object.prototype.toString.call(newList) !== '[object Array]') {
+      return;
+    }
+
+    for (var i = 0; i < lastIdentifiers.length; i++) {
+      var identifier = lastIdentifiers[i];
+      var index = getIndexByIdentifier(identifier);
+      stylesInDom[index].references--;
+    }
+
+    var newLastIdentifiers = modulesToDom(newList, options);
+
+    for (var _i = 0; _i < lastIdentifiers.length; _i++) {
+      var _identifier = lastIdentifiers[_i];
+
+      var _index = getIndexByIdentifier(_identifier);
+
+      if (stylesInDom[_index].references === 0) {
+        stylesInDom[_index].updater();
+
+        stylesInDom.splice(_index, 1);
+      }
+    }
+
+    lastIdentifiers = newLastIdentifiers;
+  };
+};
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)(false);
 // imports
 
 
@@ -836,7 +1163,7 @@ exports.push([module.i, ".treejs {\n  -webkit-box-sizing: border-box;\n         
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 /*
@@ -915,487 +1242,6 @@ function toComment(sourceMap) {
 
 	return '/*# ' + data + ' */';
 }
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-
-var stylesInDom = {};
-
-var	memoize = function (fn) {
-	var memo;
-
-	return function () {
-		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-		return memo;
-	};
-};
-
-var isOldIE = memoize(function () {
-	// Test for IE <= 9 as proposed by Browserhacks
-	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
-	// Tests for existence of standard globals is to allow style-loader
-	// to operate correctly into non-standard environments
-	// @see https://github.com/webpack-contrib/style-loader/issues/177
-	return window && document && document.all && !window.atob;
-});
-
-var getTarget = function (target) {
-  return document.querySelector(target);
-};
-
-var getElement = (function (fn) {
-	var memo = {};
-
-	return function(target) {
-                // If passing function in options, then use it for resolve "head" element.
-                // Useful for Shadow Root style i.e
-                // {
-                //   insertInto: function () { return document.querySelector("#foo").shadowRoot }
-                // }
-                if (typeof target === 'function') {
-                        return target();
-                }
-                if (typeof memo[target] === "undefined") {
-			var styleTarget = getTarget.call(this, target);
-			// Special case to return head of iframe instead of iframe itself
-			if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
-				try {
-					// This will throw an exception if access to iframe is blocked
-					// due to cross-origin restrictions
-					styleTarget = styleTarget.contentDocument.head;
-				} catch(e) {
-					styleTarget = null;
-				}
-			}
-			memo[target] = styleTarget;
-		}
-		return memo[target]
-	};
-})();
-
-var singleton = null;
-var	singletonCounter = 0;
-var	stylesInsertedAtTop = [];
-
-var	fixUrls = __webpack_require__(6);
-
-module.exports = function(list, options) {
-	if (typeof DEBUG !== "undefined" && DEBUG) {
-		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-	}
-
-	options = options || {};
-
-	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
-
-	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-	// tags it will allow on a page
-	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
-
-	// By default, add <style> tags to the <head> element
-        if (!options.insertInto) options.insertInto = "head";
-
-	// By default, add <style> tags to the bottom of the target
-	if (!options.insertAt) options.insertAt = "bottom";
-
-	var styles = listToStyles(list, options);
-
-	addStylesToDom(styles, options);
-
-	return function update (newList) {
-		var mayRemove = [];
-
-		for (var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-
-			domStyle.refs--;
-			mayRemove.push(domStyle);
-		}
-
-		if(newList) {
-			var newStyles = listToStyles(newList, options);
-			addStylesToDom(newStyles, options);
-		}
-
-		for (var i = 0; i < mayRemove.length; i++) {
-			var domStyle = mayRemove[i];
-
-			if(domStyle.refs === 0) {
-				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
-
-				delete stylesInDom[domStyle.id];
-			}
-		}
-	};
-};
-
-function addStylesToDom (styles, options) {
-	for (var i = 0; i < styles.length; i++) {
-		var item = styles[i];
-		var domStyle = stylesInDom[item.id];
-
-		if(domStyle) {
-			domStyle.refs++;
-
-			for(var j = 0; j < domStyle.parts.length; j++) {
-				domStyle.parts[j](item.parts[j]);
-			}
-
-			for(; j < item.parts.length; j++) {
-				domStyle.parts.push(addStyle(item.parts[j], options));
-			}
-		} else {
-			var parts = [];
-
-			for(var j = 0; j < item.parts.length; j++) {
-				parts.push(addStyle(item.parts[j], options));
-			}
-
-			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-		}
-	}
-}
-
-function listToStyles (list, options) {
-	var styles = [];
-	var newStyles = {};
-
-	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = options.base ? item[0] + options.base : item[0];
-		var css = item[1];
-		var media = item[2];
-		var sourceMap = item[3];
-		var part = {css: css, media: media, sourceMap: sourceMap};
-
-		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
-		else newStyles[id].parts.push(part);
-	}
-
-	return styles;
-}
-
-function insertStyleElement (options, style) {
-	var target = getElement(options.insertInto)
-
-	if (!target) {
-		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
-	}
-
-	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
-
-	if (options.insertAt === "top") {
-		if (!lastStyleElementInsertedAtTop) {
-			target.insertBefore(style, target.firstChild);
-		} else if (lastStyleElementInsertedAtTop.nextSibling) {
-			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
-		} else {
-			target.appendChild(style);
-		}
-		stylesInsertedAtTop.push(style);
-	} else if (options.insertAt === "bottom") {
-		target.appendChild(style);
-	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
-		var nextSibling = getElement(options.insertInto + " " + options.insertAt.before);
-		target.insertBefore(style, nextSibling);
-	} else {
-		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
-	}
-}
-
-function removeStyleElement (style) {
-	if (style.parentNode === null) return false;
-	style.parentNode.removeChild(style);
-
-	var idx = stylesInsertedAtTop.indexOf(style);
-	if(idx >= 0) {
-		stylesInsertedAtTop.splice(idx, 1);
-	}
-}
-
-function createStyleElement (options) {
-	var style = document.createElement("style");
-
-	if(options.attrs.type === undefined) {
-		options.attrs.type = "text/css";
-	}
-
-	addAttrs(style, options.attrs);
-	insertStyleElement(options, style);
-
-	return style;
-}
-
-function createLinkElement (options) {
-	var link = document.createElement("link");
-
-	if(options.attrs.type === undefined) {
-		options.attrs.type = "text/css";
-	}
-	options.attrs.rel = "stylesheet";
-
-	addAttrs(link, options.attrs);
-	insertStyleElement(options, link);
-
-	return link;
-}
-
-function addAttrs (el, attrs) {
-	Object.keys(attrs).forEach(function (key) {
-		el.setAttribute(key, attrs[key]);
-	});
-}
-
-function addStyle (obj, options) {
-	var style, update, remove, result;
-
-	// If a transform function was defined, run it on the css
-	if (options.transform && obj.css) {
-	    result = options.transform(obj.css);
-
-	    if (result) {
-	    	// If transform returns a value, use that instead of the original css.
-	    	// This allows running runtime transformations on the css.
-	    	obj.css = result;
-	    } else {
-	    	// If the transform function returns a falsy value, don't add this css.
-	    	// This allows conditional loading of css
-	    	return function() {
-	    		// noop
-	    	};
-	    }
-	}
-
-	if (options.singleton) {
-		var styleIndex = singletonCounter++;
-
-		style = singleton || (singleton = createStyleElement(options));
-
-		update = applyToSingletonTag.bind(null, style, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
-
-	} else if (
-		obj.sourceMap &&
-		typeof URL === "function" &&
-		typeof URL.createObjectURL === "function" &&
-		typeof URL.revokeObjectURL === "function" &&
-		typeof Blob === "function" &&
-		typeof btoa === "function"
-	) {
-		style = createLinkElement(options);
-		update = updateLink.bind(null, style, options);
-		remove = function () {
-			removeStyleElement(style);
-
-			if(style.href) URL.revokeObjectURL(style.href);
-		};
-	} else {
-		style = createStyleElement(options);
-		update = applyToTag.bind(null, style);
-		remove = function () {
-			removeStyleElement(style);
-		};
-	}
-
-	update(obj);
-
-	return function updateStyle (newObj) {
-		if (newObj) {
-			if (
-				newObj.css === obj.css &&
-				newObj.media === obj.media &&
-				newObj.sourceMap === obj.sourceMap
-			) {
-				return;
-			}
-
-			update(obj = newObj);
-		} else {
-			remove();
-		}
-	};
-}
-
-var replaceText = (function () {
-	var textStore = [];
-
-	return function (index, replacement) {
-		textStore[index] = replacement;
-
-		return textStore.filter(Boolean).join('\n');
-	};
-})();
-
-function applyToSingletonTag (style, index, remove, obj) {
-	var css = remove ? "" : obj.css;
-
-	if (style.styleSheet) {
-		style.styleSheet.cssText = replaceText(index, css);
-	} else {
-		var cssNode = document.createTextNode(css);
-		var childNodes = style.childNodes;
-
-		if (childNodes[index]) style.removeChild(childNodes[index]);
-
-		if (childNodes.length) {
-			style.insertBefore(cssNode, childNodes[index]);
-		} else {
-			style.appendChild(cssNode);
-		}
-	}
-}
-
-function applyToTag (style, obj) {
-	var css = obj.css;
-	var media = obj.media;
-
-	if(media) {
-		style.setAttribute("media", media)
-	}
-
-	if(style.styleSheet) {
-		style.styleSheet.cssText = css;
-	} else {
-		while(style.firstChild) {
-			style.removeChild(style.firstChild);
-		}
-
-		style.appendChild(document.createTextNode(css));
-	}
-}
-
-function updateLink (link, options, obj) {
-	var css = obj.css;
-	var sourceMap = obj.sourceMap;
-
-	/*
-		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
-		and there is no publicPath defined then lets turn convertToAbsoluteUrls
-		on by default.  Otherwise default to the convertToAbsoluteUrls option
-		directly
-	*/
-	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
-
-	if (options.convertToAbsoluteUrls || autoFixUrls) {
-		css = fixUrls(css);
-	}
-
-	if (sourceMap) {
-		// http://stackoverflow.com/a/26603875
-		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-	}
-
-	var blob = new Blob([css], { type: "text/css" });
-
-	var oldSrc = link.href;
-
-	link.href = URL.createObjectURL(blob);
-
-	if(oldSrc) URL.revokeObjectURL(oldSrc);
-}
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-
-/**
- * When source maps are enabled, `style-loader` uses a link element with a data-uri to
- * embed the css on the page. This breaks all relative urls because now they are relative to a
- * bundle instead of the current page.
- *
- * One solution is to only use full urls, but that may be impossible.
- *
- * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
- *
- * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
- *
- */
-
-module.exports = function (css) {
-  // get current location
-  var location = typeof window !== "undefined" && window.location;
-
-  if (!location) {
-    throw new Error("fixUrls requires window.location");
-  }
-
-	// blank or null?
-	if (!css || typeof css !== "string") {
-	  return css;
-  }
-
-  var baseUrl = location.protocol + "//" + location.host;
-  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
-
-	// convert each url(...)
-	/*
-	This regular expression is just a way to recursively match brackets within
-	a string.
-
-	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
-	   (  = Start a capturing group
-	     (?:  = Start a non-capturing group
-	         [^)(]  = Match anything that isn't a parentheses
-	         |  = OR
-	         \(  = Match a start parentheses
-	             (?:  = Start another non-capturing groups
-	                 [^)(]+  = Match anything that isn't a parentheses
-	                 |  = OR
-	                 \(  = Match a start parentheses
-	                     [^)(]*  = Match anything that isn't a parentheses
-	                 \)  = Match a end parentheses
-	             )  = End Group
-              *\) = Match anything and then a close parens
-          )  = Close non-capturing group
-          *  = Match anything
-       )  = Close capturing group
-	 \)  = Match a close parens
-
-	 /gi  = Get all matches, not the first.  Be case insensitive.
-	 */
-	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
-		// strip quotes (if they exist)
-		var unquotedOrigUrl = origUrl
-			.trim()
-			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
-			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
-
-		// already a full url? no change
-		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/|\s*$)/i.test(unquotedOrigUrl)) {
-		  return fullMatch;
-		}
-
-		// convert the url to a full url
-		var newUrl;
-
-		if (unquotedOrigUrl.indexOf("//") === 0) {
-		  	//TODO: should we add protocol?
-			newUrl = unquotedOrigUrl;
-		} else if (unquotedOrigUrl.indexOf("/") === 0) {
-			// path should be relative to the base url
-			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
-		} else {
-			// path should be relative to current directory
-			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
-		}
-
-		// send back the fixed url(...)
-		return "url(" + JSON.stringify(newUrl) + ")";
-	});
-
-	// send back the fixed css
-	return fixedCss;
-};
 
 
 /***/ })
