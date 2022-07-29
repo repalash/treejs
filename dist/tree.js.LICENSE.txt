@@ -1,0 +1,6 @@
+/*!
+ * treejs
+ * @version 2.0.0
+ * @see https://github.com/repalash/treejs.git
+ * Updated from version: 1.8.0 @see https://github.com/daweilv/treejs
+ */

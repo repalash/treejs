@@ -83,7 +83,7 @@ export default class Tree {
                     return this.getValues();
                 },
                 set(values) {
-                    return this.setValues(uniq(values));
+                    this.setValues(uniq(values));
                 },
             },
             disables: {
@@ -91,7 +91,7 @@ export default class Tree {
                     return this.getDisables();
                 },
                 set(values) {
-                    return this.setDisables(uniq(values));
+                    this.setDisables(uniq(values));
                 },
             },
             selectedNodes: {
@@ -103,7 +103,7 @@ export default class Tree {
                             Object.prototype.hasOwnProperty.call(nodesById, id) &&
                             (nodesById[id].status === 1 || nodesById[id].status === 2)
                         ) {
-                            const node = Object.assign({}, nodesById[id]);
+                            const node = { ...nodesById[id]};
                             delete node.parent;
                             delete node.children;
                             nodes.push(node);
@@ -118,7 +118,7 @@ export default class Tree {
                     const {nodesById} = this;
                     Object.keys(nodesById).forEach(id => {
                         if (Object.prototype.hasOwnProperty.call(nodesById, id) && nodesById[id].disabled) {
-                            const node = Object.assign({}, nodesById[id]);
+                            const node = { ...nodesById[id]};
                             delete node.parent;
                             nodes.push(node);
                         }

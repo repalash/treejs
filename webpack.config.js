@@ -52,14 +52,14 @@ module.exports = {
         ],
     },
     optimization: {
-        minimize: true,
         minimizer: [
             new CssMinimizerPlugin(),
+            '...' // adds the default terser,
         ],
     },
     plugins: [
         new webpack.BannerPlugin(
-            'treejs\n@version 1.8.0\n@see https://github.com/daweilv/treejs'
+            'treejs\n@version 2.0.0\n@see https://github.com/repalash/treejs.git \nUpdated from version: 1.8.0 @see https://github.com/daweilv/treejs'
         ),
         new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
     ],
