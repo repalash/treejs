@@ -56,7 +56,7 @@ function expandFromRoot(tree, root) {
 export default class Tree {
     /**
      * @param container {string|HTMLElement}
-     * @param options {{data: any, closeDepth: number, values: string[], disables: string[], loaded: ()=>void, onItemLabelClick: (item: any)=>void, onChange: ()=>void}}
+     * @param options {{data: any, closeDepth?: number, values?: string[], disables?: string[], loaded?: ()=>void, onItemLabelClick?: (item: any)=>void, onChange?: ()=>void}}
      */
     constructor(container, options) {
 
