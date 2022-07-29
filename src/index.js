@@ -1,4 +1,3 @@
-import ajax from './ajax';
 import styles from './index.less';
 
 function deepClone(obj) {
@@ -63,10 +62,7 @@ export default class Tree {
             selectMode: 'checkbox',
             values: [],
             disables: [],
-            beforeLoad: null,
             loaded: null,
-            url: null,
-            method: 'GET',
             closeDepth: null,
         };
         this.treeNodes = [];
@@ -128,15 +124,8 @@ export default class Tree {
             },
         });
 
-        if (this.options.url) {
-            this.load(data => {
-                this.init(data);
-            });
-        } else {
-            this.init(this.options.data);
-        }
+        this.init(this.options.data);
     }
-
 
     init(data) {
         const {
@@ -156,21 +145,6 @@ export default class Tree {
         if (disables && disables.length) this.setDisables(disables);
         else if (defaultDisables && defaultDisables.length) this.setDisables(defaultDisables);
         if (typeof loaded === 'function') loaded.call(this);
-    };
-
-    load(callback) {
-        const {url, method, beforeLoad} = this.options;
-        ajax({
-            url,
-            method,
-            success: result => {
-                let data = result;
-                if (beforeLoad) {
-                    data = beforeLoad(result);
-                }
-                callback(data);
-            },
-        });
     };
 
     render(treeNodes) {

@@ -4,6 +4,11 @@ Toggle checkbox on only checkbox click.
 Event on label click
 Remove console.time logs.
 
+Upgrade to webpack 5 and babel 7.
+Convert Tree to es6 class.
+Removed url, method parameter and ajax file. Downloaded data must be passed. 
+Constructor also accepts HTMLElement as container.
+
 # @widgetjs/tree
 
 [![Version](https://img.shields.io/npm/v/@widgetjs/tree?style=flat)](https://npmjs.com/package/@widgetjs/tree)
@@ -74,24 +79,13 @@ import Tree from '@widgetjs/tree';
 | children   | array   | children of current node            | Optional |
 | checked      | boolean | whether the node is selected or not | Optional |
 
-### Example
-
-```js
-const myTree = new Tree('#container', {
-  url: '/api/treeJson',
-});
-```
-
 ## Parameters
 
 | Name       | Type     | Description                                                         |
 | ---------- | -------- | ------------------------------------------------------------------- |
-| url        | string   | a URL to retrieve remote data,or use `data`                         |
-| method     | string   | http method(GET/POST), default 'GET'                                |
 | data       | array    | the json tree data                                                  |
 | values     | array    | ids which you want to check                                         |
 | closeDepth | integer  | expand level                                                        |
-| beforeLoad | function | invoke before the tree load data. Format raw data in this function. |
 | loaded     | function | invoke after the tree load data                                     |
 | onChange   | function | invoke when the node status change                                  |
 
@@ -129,8 +123,7 @@ const myTree = new Tree('#container', {
 
 ```js
 const myTree = new Tree('#container', {
-  url: '/api/treeJson',
-  method: 'GET',
+  data: treeData,
 
   values: ['1', '2', '3'],
 
