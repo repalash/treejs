@@ -54,12 +54,15 @@ function expandFromRoot(tree, root) {
 }
 
 export default class Tree {
+    /**
+     * @param container {string|HTMLElement}
+     * @param options {{data: any, values: string[], disables: string[], loaded: ()=>void}}
+     */
     constructor(container, options) {
 
         styles.use({target: typeof this.container === 'string' ? document.querySelector(this.container) : this.container});
 
         const defaultOptions = {
-            selectMode: 'checkbox',
             values: [],
             disables: [],
             loaded: null,
@@ -218,11 +221,17 @@ export default class Tree {
     }
     ;
 
+    /**
+     * @param id {string}
+     */
     onItemLabelClick(id) {
         const {onItemLabelClick} = this.options;
         if (onItemLabelClick) onItemLabelClick.call(this, id);
     };
 
+    /**
+     * @param {string} value
+     */
     setValue(value) {
         const node = this.nodesById[value];
         if (!node) return;
@@ -234,6 +243,9 @@ export default class Tree {
         this.walkDown(node, 'status');
     };
 
+    /**
+     * @returns {string[]}
+     */
     getValues() {
         const values = [];
         Object.keys(this.leafNodesById).forEach(id => {

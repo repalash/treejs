@@ -5,7 +5,8 @@
   "main": "index.js",
   "module": "index.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js; npm run types;",
+    "types": "npx -p typescript tsc src/index.js --declaration --allowJs --emitDeclarationOnly --outDir dist"
   },
   "browserslist": [
     ">1%",
