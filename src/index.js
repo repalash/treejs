@@ -57,7 +57,7 @@ function expandFromRoot(tree, root) {
 export default class Tree {
     constructor(container, options) {
 
-        styles.use({target: container});
+        styles.use({target: typeof this.container === 'string' ? document.querySelector(this.container) : this.container});
 
         const defaultOptions = {
             selectMode: 'checkbox',
@@ -177,7 +177,7 @@ export default class Tree {
         const treeEle = Tree.createRootEle();
         treeEle.appendChild(this.buildTree(treeNodes, 0));
         this.bindEvent(treeEle);
-        const ele = document.querySelector(this.container);
+        const ele = typeof this.container === 'string' ? document.querySelector(this.container) : this.container;
         empty(ele);
         ele.appendChild(treeEle);
     };

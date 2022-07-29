@@ -33,7 +33,7 @@ module.exports = {
                             // not all browsers support latest ECMA features like `let`, `const`, `arrow function expression` and etc,
                             // we recommend use only ECMA 5 features,
                             insert: function insertIntoTarget(element, options) {
-                                ;(options.target || document.head).appendChild(element);
+                                (options.target || document.head).appendChild(element);
                             },
                         },
                     },
