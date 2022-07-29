@@ -28,7 +28,18 @@ module.exports = {
             {
                 test: /\.less$/,
                 use: [
-                    'style-loader',
+                    {
+                        loader: "style-loader",
+                        options: {
+                            injectType: "lazyStyleTag",
+                            // Do not forget that this code will be used in the browser and
+                            // not all browsers support latest ECMA features like `let`, `const`, `arrow function expression` and etc,
+                            // we recommend use only ECMA 5 features,
+                            insert: function insertIntoTarget(element, options) {
+                                ;(options.target || document.head).appendChild(element);
+                            },
+                        },
+                    },
                     'css-loader',
                     {
                         loader: 'postcss-loader',
