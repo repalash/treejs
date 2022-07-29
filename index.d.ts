@@ -12,13 +12,16 @@ export default class Tree {
     static createLiEle(node: any, closed: any): HTMLLIElement;
     /**
      * @param container {string|HTMLElement}
-     * @param options {{data: any, values: string[], disables: string[], loaded: ()=>void}}
+     * @param options {{data: any, closeDepth: number, values: string[], disables: string[], loaded: ()=>void, onItemLabelClick: ()=>void, onChange: ()=>void}}
      */
     constructor(container: string | HTMLElement, options: {
         data: any;
+        closeDepth: number;
         values: string[];
         disables: string[];
         loaded: () => void;
+        onItemLabelClick: () => void;
+        onChange: () => void;
     });
     treeNodes: any[];
     nodesById: {};
@@ -33,9 +36,12 @@ export default class Tree {
         closeDepth: any;
     } & {
         data: any;
+        closeDepth: number;
         values: string[];
         disables: string[];
         loaded: () => void;
+        onItemLabelClick: () => void;
+        onChange: () => void;
     };
     init(data: any): void;
     render(treeNodes: any): void;
