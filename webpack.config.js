@@ -1,4 +1,3 @@
-const postcss = require('postcss-import');
 const autoprefixer = require('autoprefixer');
 const webpack = require('webpack');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
@@ -41,12 +40,11 @@ module.exports = {
                     'css-loader',
                     {
                         loader: 'postcss-loader',
-                        options: {
+                        options: {postcssOptions:{
                             plugins: [
-                                postcss,
                                 autoprefixer,
                             ],
-                        },
+                        }},
                     },
                     'less-loader',
                 ],
