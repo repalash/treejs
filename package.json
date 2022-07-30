@@ -53,7 +53,7 @@
     "postcss-loader": "^7.0.1",
     "prettier": "2.7.1",
     "prettier-eslint": "^15.0.1",
-    "style-loader": "^3.3.1",
+    "style-loader": "git+ssh://github.com/repalash/style-loader.git#parcel-fix",
     "url-loader": "^4.1.1",
     "webpack": "^5.74.0",
     "webpack-bundle-analyzer": "^4.5.0",
