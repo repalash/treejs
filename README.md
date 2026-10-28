@@ -1,3 +1,5 @@
+> **@repalash/treejs** is a fork of [daweilv/treejs](https://github.com/daweilv/treejs) (`@widgetjs/tree`, MIT), from the `webgi` branch of [repalash/treejs](https://github.com/repalash/treejs): TypeScript types, an element as the container, `closeDepth`, a default export, and no ajax loading. Install: `npm i @repalash/treejs`, then `import Tree from '@repalash/treejs'`.
+
 ### Changes in this fork
 UI changes.
 Toggle checkbox on only checkbox click.

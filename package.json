@@ -1,10 +1,22 @@
 {
-  "name": "@widgetjs/tree",
+  "name": "@repalash/treejs",
   "version": "2.0.0",
-  "description": "a lightweight tree widget, compatible with originaljs/react/vue, 9.6kb size for tree.min.js&tree.min.css without gzip.",
+  "description": "A lightweight tree widget (from daweilv/treejs, @widgetjs/tree), with types, an element container and closeDepth",
   "main": "index.js",
   "module": "index.js",
   "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "dist/tree.js",
+    "dist/tree.js.map",
+    "dist/tree.js.LICENSE.txt",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "webpack --config webpack.config.js; npm run types;",
     "types": "npx -p typescript tsc src/index.js --declaration --allowJs --emitDeclarationOnly --outDir ."
@@ -63,7 +75,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/daweilv/treejs.git"
+    "url": "git+https://github.com/repalash/treejs.git"
   },
   "keywords": [
     "js",
@@ -75,9 +87,12 @@
     "vue-tree"
   ],
   "author": "daweilv",
+  "contributors": [
+    "Palash Bansal <palashbansal96@gmail.com>"
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/daweilv/treejs/issues"
+    "url": "https://github.com/repalash/treejs/issues"
   },
-  "homepage": "https://github.com/daweilv/treejs#readme"
+  "homepage": "https://github.com/repalash/treejs#readme"
 }
