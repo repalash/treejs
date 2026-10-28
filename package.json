@@ -1,7 +1,7 @@
 {
-  "name": "@threepipe/treejs",
+  "name": "@repalash/treejs",
   "version": "2.0.0",
-  "description": "A lightweight tree widget (from daweilv/treejs, @widgetjs/tree), with types, an element container and closeDepth; published for @threepipe/plugin-tweakpane-editor",
+  "description": "A lightweight tree widget (from daweilv/treejs, @widgetjs/tree), with types, an element container and closeDepth; published for @threepipe/plugin-tweakpane-editor (HierarchyUiPlugin), until it is replaced",
   "main": "index.js",
   "module": "index.js",
   "types": "index.d.ts",
